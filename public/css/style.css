@@ -1,0 +1,64 @@
+/* All Clients Route*/
+.allclients{
+    background-color: aqua;
+    display: flex; 
+    align-items:center ;
+    justify-content: center;
+    flex-wrap: wrap !important;
+}
+.card{
+    background-color:white !important;
+    border: 2px solid black!important;
+}
+.card-header{
+    background-color: #8C85FF !important;
+}
+.allclients-btns{
+    display: flex;
+    justify-content: space-evenly;
+}
+a{
+    text-decoration: none !important;
+    color: black !important;
+}
+.client-name{
+    font-weight: 700;
+}
+.client-detail-name{
+    color: red !important;
+}
+ .navbar{
+    z-index: 2 !important;
+    background-color: white !important;
+    position: fixed !important;
+    top: 0% !important;
+    width: 100vw;
+}
+.submit-items{
+    padding-top: 4rem !important;
+}
+
+
+
+
+.card-custom {
+    max-width: 300px;
+    margin: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Add background-color transition */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Default shadow */
+    background-color: white; /* Default background color */
+}
+
+.card-custom:hover {
+    transform: translateY(-5px) scale(1.05); /* Lift, scale, and slightly rotate on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+    background-color: #e7f3ff; /* Change background color on hover */
+}
+
+/* Ensure text in card header is easily readable */
+.card-header {
+    background-color: #007bff;
+    color: white;
+}
+
+

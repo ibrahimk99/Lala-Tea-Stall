@@ -1,0 +1,27 @@
+<% layout("/layouts/boilerplate") %>
+<title>Edit Name</title>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Rename Client Table</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-white bg-primary">
+                    <h5 class="card-title">Rename Table for Client: <%= clientId %></h5>
+                </div>
+                <div class="card-body">
+                    <form action="/edit/<%= clientId %>" method="POST">
+                        <div class="mb-3">
+                            <label for="newClientId" class="form-label">New Client ID</label>
+                            <input type="text" class="form-control" id="newClientId" name="newClientId"
+                            value="<%= clientId %> " placeholder="Enter new client ID" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Rename Client</button>
+                            <a href="/clients" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

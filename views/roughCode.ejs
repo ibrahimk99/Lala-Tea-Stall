@@ -1,0 +1,56 @@
+<% layout("/layouts/boilerplate") %>
+<style>
+    h1{
+        padding-top: 60px;
+    }
+</style>
+<title>Grand Total</title>
+<h1 class="text-center my-4">Grand Totals of All Clients</h1>
+<table id="grand-total" class="table table-bordered table-striped table-hover border-primary table-responsive-sm-md-lg-xl-xxl">
+    <thead class="table-success">
+        <tr>
+            <th>Name</th>
+            <th>Grand Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% let overallTotal = 0; %>
+        <% clients.forEach(client => { 
+            if (client.grandTotal > 0) { %> <!-- Only show clients with a balance greater than 0 -->
+            <tr>
+                <td><a href="/<%= client.tableName %>"><%= client.tableName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') %></a></td>
+                <td><%= Number(client.grandTotal).toFixed(2) %></td>
+            </tr>
+            <% overallTotal += Number(client.grandTotal); %>
+        <% } 
+        }) %>
+        <tr>
+            <td><strong>Total of All Clients</strong></td>
+            <td><strong><%= overallTotal.toFixed(2) %></strong></td>
+        </tr>
+    </tbody>
+</table>
+<button class="btn btn-primary" onclick="printTable()">Print Table</button>
+<script>
+  function printTable() {
+    var printContents = document.getElementById("grand-total").outerHTML;
+    var originalContents = document.body.innerHTML;
+    var currentDate = new Date();
+    console.log(currentDate)
+    
+    document.body.innerHTML = `<html><head><title>${currentDate}</title></head><body>${printContents}</body></html>`;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // Reload the page to restore content
+}
+
+  const links = document.querySelectorAll('a');
+  links.forEach(link =>{
+    link.addEventListener('click',
+        event => {
+            event.preventDefault();
+            window.open(link.href,'_blank','noopener,noreferrer')
+        }
+    )
+})
+</script>
