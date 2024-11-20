@@ -1,0 +1,145 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  /* General table styles */
+  table {
+    width: 100%;
+    font-size: 1rem; /* Default font size */
+  }
+
+  @media (max-width: 768px) {
+    /* For tablets and smaller screens */
+    table {
+      font-size: 0.875rem; /* Smaller font size on tablets */
+    }
+  }
+
+  @media (max-width: 390px) {
+    /* For mobile devices */
+    table {
+      font-size: 0.48rem; /* Even smaller font size on mobile */
+    }
+
+    th, td {
+      padding: 0.3rem; /* Reduce padding to make it more compact */
+    }
+  }
+
+  /* Adjust the button text size for mobile */
+  @media (max-width: 576px) {
+    .btn {
+      font-size: 0.875rem;
+    }
+  }
+</style>
+<title> Daily Progress Report</title>
+<div class="container mt-5 pt-5">
+  <div class="accordion" id="accordionExample">
+    <% 
+      // Group reports by date
+      const reportsByDate = {};
+      previousReports.forEach(report => {
+        const reportDate = new Date(report.report_date).toLocaleDateString('en-PK');
+        if (!reportsByDate[reportDate]) {
+          reportsByDate[reportDate] = [];
+        }
+        reportsByDate[reportDate].push(report);
+      });
+
+      // Loop through grouped reports and create an accordion per date
+      Object.keys(reportsByDate).forEach((date, index) => { 
+    %>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading<%= index %>">
+          <button class="accordion-button <%= index === 0 ? '' : 'collapsed' %>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="<%= index === 0 ? 'true' : 'false' %>" aria-controls="collapse<%= index %>">
+            Report Date:&nbsp; <strong><%= date %></strong> 
+          </button>
+        </h2>
+        <div id="collapse<%= index %>" class="accordion-collapse collapse <%= index === 0 ? 'show' : '' %>" aria-labelledby="heading<%= index %>" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            // <!-- Table for Daily Deduction Progress -->
+            <h2 class="mt-3">Deduction Progress on <%= date %></h2>
+            <div class="table-responsive">
+              <table id="DPR<%= index %>" class="table table-bordered table-striped table-hover border-primary">
+                <thead class="table-success">
+                  <tr>
+                    <th>Client ID</th>
+                    <th>Date</th>
+                    <th>Total Deductions</th>
+                    <th>Remaining Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+  <% reportsByDate[date].forEach(report => { 
+    // Convert client_id to string
+    const clientIdStr = String(report.client_id);
+    
+    // Convert to numbers for proper formatting
+    const totalDeductions = Number(report.total_deductions);
+    const remainingTotal = Number(report.remaining_total);
+  %>
+    <tr>
+      <td><a href="/<%= clientIdStr %>"><%= clientIdStr.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') %></a></td>
+      <td><%= date %></td>
+      <td><%= !isNaN(totalDeductions) ? totalDeductions.toFixed(2) : '0.00' %></td>
+      <td><%= !isNaN(remainingTotal) ? remainingTotal.toFixed(2) : '0.00' %></td>
+    </tr>
+  <% }) %>
+</tbody>
+
+              </table>
+            </div>
+
+            <!-- Grand Total Table for the selected date -->
+            <h2 class="mt-4">Grand Total of Deductions on <%= date %></h2>
+            <div class="table-responsive">
+              <table id="gd<%= index %>" class="table table-bordered table-striped table-hover border-primary">
+                <thead class="table-success">
+                  <tr>
+                    <th>Date</th>
+                    <th>Grand Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><%= date %></td>
+                    <td><%= grandTotalMap[date] ? grandTotalMap[date].toFixed(2) : '0.00' %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="mt-3">
+              <button class="btn btn-primary" onclick="printTable(<%= index %>)">Print Table</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<script>
+  function printTable(index) {
+    // Select tables by ID for the given index
+    const tables = document.querySelectorAll(`#DPR${index}, #gd${index}`);
+    
+    // Combine the outer HTML of the selected tables
+    let printContents = '';
+    tables.forEach(table => {
+      printContents += table.outerHTML;
+    });
+    
+    // Save the original contents of the body
+    const originalContents = document.body.innerHTML;
+    
+    // Set the body contents to the tables' HTML for printing
+    document.body.innerHTML = `<html><head><title>Print Table</title></head><body>${printContents}</body></html>`;
+    
+    // Print the page
+    window.print();
+    
+    // Restore the original body contents
+    document.body.innerHTML = originalContents;
+  }
+</script>

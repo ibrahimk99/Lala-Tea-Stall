@@ -1,0 +1,205 @@
+<% layout ("/layouts/boilerplate") %>
+<style>
+  /* General table styles */
+table {
+  width: 100%;
+  font-size: 1rem; /* Default font size */
+}
+
+@media (max-width: 768px) {
+  /* For tablets and smaller screens */
+  table {
+    font-size: 0.875rem; /* Smaller font size on tablets */
+  }
+}
+
+@media (max-width: 390px) {
+  /* For mobile devices */
+  table {
+    font-size: 0.30rem; /* Even smaller font size on mobile */
+  }
+
+  th, td {
+    padding: 0.3rem; /* Reduce padding to make it more compact */
+  }
+}
+
+/* Adjust the button text size for mobile */
+@media (max-width: 576px) {
+  .btn {
+    font-size: 0.875rem;
+  }
+}
+</style>
+<title><%= clientId.toUpperCase() %></title>
+<div class="container my-4 submit-items">
+  <h1 class="text-center mb-4"><span class="client-detail-name"><%= clientId.toUpperCase() %></span></h1>
+  <form class="form-control" action="/submit/<%= clientId %>" method="POST">
+
+    <div class="mb-3 row">
+      <label for="tea" class="col-12 col-md-2 col-form-label">Select Tea:</label>
+      <div class="col-12 col-md-4">
+        <select class="form-select" name="teaValue" id="tea">
+          <% teaOptions.forEach(option => { %>
+            <option value="<%= option.value %>"><%= option.text %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="bottle" class="col-12 col-md-2 col-form-label">Select Bottle:</label>
+      <div class="col-12 col-md-4">
+        <select class="form-select" name="bottleValue" id="bottle">
+          <% bottleOptions.forEach(option => { %>
+            <option value="<%= option.value %>"><%= option.text %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+    
+    <div class="mb-3 row">
+      <label for="quantity" class="col-12 col-md-2 col-form-label">Quantity:</label>
+      <div class="col-12 col-md-4">
+        <input type="number" class="form-control" name="quantity" id="quantity" value="1">
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="kharcha" class="col-12 col-md-2 col-form-label">Kharcha:</label>
+      <div class="col-12 col-md-4">
+        <input type="number" class="form-control" name="kharcha" id="kharcha" value="0">
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+  </form>
+</div>
+
+<!-- Deduction Form -->
+<div class="container my-4">
+  <h2 class="text-center">Apply Deduction</h2>
+  <form action="/deduct/<%= tableName %>" method="POST" class="mb-4">
+    <div class="mb-3">
+      <label for="deductionAmount" class="form-label">Deduction Amount:</label>
+      <input class="form-control" type="number" id="deductionAmount" name="deductionAmount" required>
+    </div>
+    <button class="btn btn-outline-primary" type="submit">Apply Deduction</button>
+  </form>
+</div>
+
+<!-- Client Details Table -->
+<div class="container">
+  <h2 class="text-center"><span class="client-detail-name"><%= clientId.toUpperCase() %></span> Details</h2>
+  <div class="table-responsive"> <!-- Add table-responsive for scrollable tables -->
+    <table class="table table-bordered border-primary">
+      <thead class="table-success">
+        <tr>
+          <th>Quantity</th>
+          <th>Bottle</th>
+          <th>Tea</th>
+          <th>Kharcha</th>
+          <th>Total</th>
+          <th>Deduction</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% details.forEach(detail => { %>
+          <tr>
+            <td><%= detail.quantity %></td>
+            <td><%= detail.bottle != 0 ? detail.bottle : '' %></td>
+            <td><%= detail.tea != 0 ? detail.tea : '' %></td>
+            <td><%= detail.kharcha != 0 ? detail.kharcha : '' %></td>
+            <td><%= detail.grand_total_copy %></td>
+            <td><%= detail.deduction %></td>
+            <td><%= new Date(detail.created_at).toLocaleString() %></td> 
+            <td>
+              <form action="/delete/client/<%= tableName %>/<%= detail.id %>" method="POST"> 
+                <button class="btn btn-outline-danger btn-sm" type="submit" 
+                onsubmit="return confirm('Are you sure you want to delete this row?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <nav>
+    <ul class="pagination justify-content-center">
+      <% if (currentDetailsPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?detailsPage=<%= currentDetailsPage - 1 %>&ledgerPage=<%= currentLedgerPage %>">Previous</a>
+        </li>
+      <% } %>
+      <% for (let i = 1; i <= totalDetailsPages; i++) { %>
+        <li class="page-item <%= currentDetailsPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?detailsPage=<%= i %>&ledgerPage=<%= currentLedgerPage %>"><%= i %></a>
+        </li>
+      <% } %>
+      <% if (currentDetailsPage < totalDetailsPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="?detailsPage=<%= currentDetailsPage + 1 %>&ledgerPage=<%= currentLedgerPage %>">Next</a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+</div>
+
+<!-- Deduction Ledger Table -->
+<div class="container my-4">
+  <h2 class="text-center"><span class="client-detail-name"><%= clientId.toUpperCase() %></span> Deduction Ledger</h2>
+  <div class="table-responsive"> <!-- Add table-responsive for ledger table too -->
+    <table class="table table-bordered border-primary">
+      <thead class="table-success">
+        <tr>
+          <th>Deduction</th>
+          <th>Grand TBD</th>
+        
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% ledger.forEach(entry => { %>
+          <tr>
+            <td><%= entry.deduction_amount %></td>
+            <td><%= entry.grand_total_before_deduction %></td>
+            
+            <td><%= new Date(entry.created_at).toLocaleString() %></td>
+            <td>
+              <form action="/delete/ledger/<%= tableName %>/<%= entry.id %>" method="POST">
+                <button class="btn btn-outline-danger btn-sm" type="submit" 
+                onsubmit="return confirm('Are you sure you want to delete this ledger entry?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <nav>
+    <ul class="pagination justify-content-center">
+      <% if (currentLedgerPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?detailsPage=<%= currentDetailsPage %>&ledgerPage=<%= currentLedgerPage - 1 %>">Previous</a>
+        </li>
+      <% } %>
+      <% for (let i = 1; i <= totalLedgerPages; i++) { %>
+        <li class="page-item <%= currentLedgerPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?detailsPage=<%= currentDetailsPage %>&ledgerPage=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+      <% if (currentLedgerPage < totalLedgerPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="?detailsPage=<%= currentDetailsPage %>&ledgerPage=<%= currentLedgerPage + 1 %>">Next</a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+</div>

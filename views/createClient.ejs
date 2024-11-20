@@ -1,0 +1,29 @@
+<% layout ("/layouts/boilerplate") %>
+<title>Create New Client</title>
+
+<h1 class="text-center my-4">Create a New Client</h1>
+<form action="/create" method="POST" class="container">
+    <div class="form-group mb-3">
+        <label for="clientId" class="form-label">Client ID:</label>
+        <input type="text" name="clientId" id="clientId" class="form-control" required autofocus>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Create Client</button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Automatically focus the next input when "Tab" is pressed.
+        const inputs = document.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach((input, index) => {
+            input.addEventListener('keydown', function (event) {
+                if (event.key === 'Tab' && index < inputs.length - 1) {
+                    event.preventDefault(); // Prevent the default tab behavior
+                    inputs[index + 1].focus(); // Move focus to the next input
+                }
+            });
+        });
+    });
+</script>
